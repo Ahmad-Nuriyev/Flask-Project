@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'ProjectFlask'
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql 
+
+    
+  adminer:
+    image: adminer
+    ports:
+      - 5000:8080
+      
+volumes:
+  mysql_data:
+
+
+
