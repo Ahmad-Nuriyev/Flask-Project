@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:ProjectFlask@localhost:3306/FlaskProject"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config["SECRET_KEY"] = '6ba0fdb3b26c8a06204f5a4538392463'
 
 
 from controllers import *
