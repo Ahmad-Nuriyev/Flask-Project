@@ -2,13 +2,14 @@ from flask import url_for, redirect, render_template
 
 from app import app
 from extensions import db
+from models import User, Product
 
-
+@app.route('/')
 @app.route ('/shop/')
 def shop():
     return render_template ('shop.html')
 
-@app.route ('/products/<int:id>/')
+@app.route ('/products/') #('/products/<int:id>/')
 def product():
     return render_template ('detail.html')
 

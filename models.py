@@ -8,8 +8,8 @@ class User (db.Model):
     email = db.Column (db.Text, nullable = False)
     password = db.Column (db.Text, nullable = False)
 
-    created_at = db.Column (db.Datetime, server_default = db.func.now())
-    updated_at = db.Column (db.Datetime, server_default = db.funk.now(), server_onupdate = db.func.now())
+    # created_at = db.Column (db.Datetime, server_default = db.func.now())
+    # updated_at = db.Column (db.Datetime, server_default = db.funk.now(), server_onupdate = db.func.now())
 
 
 class Product (db.Model):
@@ -18,3 +18,6 @@ class Product (db.Model):
     price = db.Column (db.Integer, nullable = False)
     discount_price = db.Column (db.Integer, nullable = False)
     photo = db.Column (db.Text, nullable = False)
+
+    # created_at = db.Column (db.Datetime, server_default = db.func.now())
+    # updated_at = db.Column (db.Datetime, server_default = db.funk.now(), server_onupdate = db.func.now())

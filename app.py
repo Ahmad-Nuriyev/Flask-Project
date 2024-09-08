@@ -1,6 +1,6 @@
 from flask import Flask
 
-app = Flask(__name__, template_folder='frontend/templates', static_folder= 'frontend/static')
+app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:ProjectFlask@localhost:3306/FlaskProject"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
