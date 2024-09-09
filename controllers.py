@@ -4,8 +4,8 @@ from flask_login import login_user, logout_user
 
 from app import app
 from extensions import db
-from models import User, Product
-from forms import RegisterForm, LoginForm
+from models import User, Product, Contact
+from forms import RegisterForm, LoginForm, ContactForm
 
 @app.route('/')
 @app.route ('/shop/')
@@ -32,7 +32,6 @@ def register():
                   email = form.email.data,
                   password = form.password.data,                    
              )
-             print (form.data)
              user.save()
              flash ("Successful registration", 'success')
              return redirect (url_for('login'))
@@ -43,7 +42,7 @@ def register():
 # Login səhifəsi üçün kod
 @app.route ('/login/', methods = ['GET', 'POST'])
 def login():
-    form = LoginForm
+    form = LoginForm()
     if request.method == 'POST':
         if form.validate_on_submit():
             email = form.email.data
@@ -52,10 +51,27 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
                 flash ('Login successful', 'success')
+                return redirect(url_for('shop'))
         flash ('Mail or password are incorrect', 'danger')
 
     return render_template ('login.html', form=form)
 
-@app.route ('/contact/')
+
+# Contact səhifəsi üçün kod
+@app.route ('/contact/', methods = ['GET', 'POST'])
 def contacts():
-    return render_template ('contact.html')
+    form = ContactForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            contact = Contact(                
+                name = form.name.data,
+                email = form.email.data,
+                subject = form.subject.data,
+                message = form.message.data
+            )
+            contact.save()
+            flash ("Thank you for contacting us", 'success')
+            return redirect(url_for('contacts'))
+        flash ("Some field(s) remain empty", 'danger')
+            
+    return render_template ('contact.html', form=form)
