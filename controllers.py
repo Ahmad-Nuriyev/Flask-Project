@@ -3,18 +3,39 @@ from werkzeug.security import check_password_hash
 from flask_login import login_user, logout_user
 
 from app import app
-from extensions import db
-from models import User, Product, Contact
+from models import User, Product, Contact, Category, Images
 from forms import RegisterForm, LoginForm, ContactForm
 
 @app.route('/')
 @app.route ('/shop/')
 def shop():
-    return render_template ('shop.html')
+    category = Category.query.all()
+    products = Product.query.all()
 
-@app.route ('/products/') #('/products/<int:id>/')
-def product():
-    return render_template ('detail.html')
+    context = {
+        'category' : category,
+        'products' : products
+    }
+    return render_template ('shop.html', **context)
+
+
+@app.route ('/shop/<int:id>/')
+def detail(id):
+    details = Product.query.get(id)
+    images = Images.query.filter_by(product_id=id).all()
+
+    context = {
+        'details' : details,
+        'images' : images
+    }
+    return render_template ('detail.html', **context)
+
+# Endirim qiymətləri mövcud olan məhsullar üçün ayrı səhifə
+@app.route ('/discounted/')
+def discount():
+    products = Product.query.filter(Product.discount_price != None).all()    
+    return render_template ('discount.html', products=products)
+
 
 @app.route ('/favourites/', methods = ['GET', 'POST'])
 def favourite():

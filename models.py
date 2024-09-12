@@ -18,10 +18,6 @@ class User (db.Model, UserMixin):
     def __repr__(self):
         return f"<{self.name}>"
     
-    @property
-    def full_name(self):
-        return f"{self.name} {self.surname}"
-    
     def __init__(self, name, surname, email, password):
         self.name = name
         self.surname = surname
@@ -43,19 +39,43 @@ user_products = db.Table (
 class Product (db.Model):
     id = db.Column (db.Integer, primary_key = True)
     name = db.Column (db.String(50), nullable = False)
-    price = db.Column (db.Integer, nullable = False)
-    discount_price = db.Column (db.Integer)
-    photo = db.Column (db.Text, nullable = False)
+    price = db.Column (db.Float, nullable = False)
+    discount_price = db.Column (db.Float)
+    photo = db.Column (db.Text)
+    description = db.Column (db.Text, nullable=False)
+    category_id = db.Column (db.Integer, db.ForeignKey('category.id'), nullable=False)
+
+    category = db.relationship ('Category', backref = db.backref('products', uselist=True))
 
     created_at = db.Column (db.DateTime, server_default = db.func.now())
     updated_at = db.Column (db.DateTime, server_default = db.func.now(), server_onupdate = db.func.now())
 
     def __repr__(self):
-        return f"<{self.title}>"
+        return f"<{self.name}>"
     
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+class Images(db.Model):
+    id = db.Column (db.Integer, primary_key=True)
+    photo = db.Column (db.Text)
+    product_id = db.Column (db.Integer, db.ForeignKey('product.id'))
+
+    products = db.relationship ('Product', backref = db.backref('images', uselist=True, lazy=True))
+
+class Category (db.Model):
+    id = db.Column (db.Integer, primary_key=True)
+    name = db.Column (db.String(50), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
+    
+    parent = db.relationship('Category', remote_side=[id], backref=db.backref('children', uselist=True))
+    
+    created_at = db.Column (db.DateTime, server_default = db.func.now())
+    updated_at = db.Column (db.DateTime, server_default = db.func.now(), server_onupdate = db.func.now())
+
+    def _repr_(self):
+        return f"<{self.name}>"
 
 
 class Contact(db.Model):
