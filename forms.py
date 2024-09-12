@@ -7,19 +7,19 @@ from models import User
 def password_check(form, field):
     password = field.data
     
-    # Check for at least one uppercase letter
+    # bir böyük hərfin olmasını yoxlayır
     if not any(char.isupper() for char in password):
         raise ValidationError("Password must contain at least one uppercase letter.")
     
-    # Check for at least one lowercase letter
+    # ən azı bir kiçik hərfin olmasını yoxlayır
     if not any(char.islower() for char in password):
         raise ValidationError("Password must contain at least one lowercase letter.")
     
-    # Check for at least one digit
+    # ən azı bir rəqəmin olmağını yoxlayır
     if not any(char.isdigit() for char in password):
         raise ValidationError("Password must contain at least one digit.")
     
-    # Check for at least one of the symbols #, $, or %
+    # #, $, vəya % simvolların olmasını yoxlayır
     if not any(char in '#$%' for char in password):
         raise ValidationError("Password must contain at least one special character (#, $, or %).")
     
