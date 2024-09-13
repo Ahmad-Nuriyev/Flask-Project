@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
 
 from models import User
@@ -52,3 +52,9 @@ class ContactForm(FlaskForm):
     message = StringField('Message', validators=[DataRequired()])
 
     submit = SubmitField('Send Message')
+
+
+class ReviewForm(FlaskForm):
+    text = TextAreaField('Your Review', validators=[DataRequired()])
+
+    submit = SubmitField()

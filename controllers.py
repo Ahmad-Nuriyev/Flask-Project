@@ -1,11 +1,13 @@
 from flask import url_for, redirect, render_template, request, flash
 from werkzeug.security import check_password_hash
-from flask_login import login_user, logout_user
+from flask_login import login_user, current_user, logout_user
 
 from app import app
-from models import User, Product, Contact, Category, Images
-from forms import RegisterForm, LoginForm, ContactForm
+from models import User, Product, Contact, Category, Images, Reviews
+from forms import RegisterForm, LoginForm, ContactForm, ReviewForm
 
+
+# Əsas/məhsul səhifənin kodu
 @app.route('/')
 @app.route ('/shop/')
 def shop():
@@ -19,16 +21,45 @@ def shop():
     return render_template ('shop.html', **context)
 
 
-@app.route ('/shop/<int:id>/')
+# Mehsulun ayri detalli sehifesi
+@app.route ('/shop/<int:id>/', methods = ['GET', 'POST'])
 def detail(id):
     details = Product.query.get(id)
     images = Images.query.filter_by(product_id=id).all()
+    
+    if details:
+        same_cat = Product.query.filter_by(category_id=details.category_id).all()
+        reviews = Reviews.query.filter_by(product_id=details.id).all()
 
-    context = {
-        'details' : details,
-        'images' : images
-    }
-    return render_template ('detail.html', **context)
+        form = ReviewForm()
+        if request.method == "POST":
+            if form.validate_on_submit():
+                if current_user.is_authenticated:
+                    review = Reviews(
+                        text = form.text.data,
+                        user_id=current_user.id,
+                        product_id=details.id
+                    )
+                    review.save()
+                    flash ('Your review has been successfuly saved', 'success')
+                    return redirect (url_for('detail', id=id))
+                else:
+                    flash ('You must be logged in to leave a review', 'danger')
+                    return redirect (url_for('detail', id=id))
+            
+
+        context = {
+            'details' : details,
+            'images' : images,
+            'same_cat' : same_cat,
+            'reviews' : reviews,
+            'form' : form
+        }
+        return render_template ('detail.html', **context)
+
+    else:
+        return ("Product not found")
+
 
 # Endirim qiymətləri mövcud olan məhsullar üçün ayrı səhifə
 @app.route ('/discounted/')
@@ -96,3 +127,11 @@ def contacts():
         flash ("Some field(s) remain empty", 'danger')
             
     return render_template ('contact.html', form=form)
+
+
+# Hesabdan chixmaq ucun kod
+@app.route('/logout/')
+def logout():
+    logout_user()
+    flash ('Logout completed', 'success')
+    return redirect(url_for('login'))

@@ -95,6 +95,25 @@ class Contact(db.Model):
         db.session.add(self)
         db.session.commit()
 
+
+class Reviews (db.Model):
+    id = db.Column (db.Integer, primary_key = True)
+    text = db.Column (db.Text, nullable=False)
+    user_id = db.Column (db.Integer, db.ForeignKey ('user.id'))
+    product_id = db.Column (db.Integer, db.ForeignKey ('product.id'))
+    
+    users = db.relationship ('User', backref = db.backref('reviews', uselist=True))
+    products = db.relationship ('Product', backref = db.backref('prodreview', uselist=True))
+    
+    created_at = db.Column (db.DateTime, server_default = db.func.now())
+    updated_at = db.Column (db.DateTime, server_default = db.func.now(), server_onupdate = db.func.now())
+
+    def __repr__(self):
+        return f"<{self.title}>"
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
         
 
 @login_manager.user_loader

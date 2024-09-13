@@ -2,6 +2,8 @@
 
 {% block title %} EShopper - Detail {% endblock %}
 
+{% from 'partials/formhelpers.html' import render_field %}
+
     {% block content %}
 
     <!-- Page Header Start -->
@@ -31,16 +33,17 @@
           >
             <div class="carousel-inner border">
               <div class="carousel-item active">
-                <img class="w-100 h-100" src="{{ details.photo }}" alt="Image" />
+                <img class="w-100 h-100" src="{{ url_for('static', filename = details.photo) }}" alt="Image" />
               </div>
               {% if images %}
                 {% for i in images %}
                   <div class="carousel-item">
-                    <img class="w-100 h-100" src="{{i.photo}}" alt="Image" />
+                    <img class="w-100 h-100" src="{{url_for('static', filename = i.photo)}}" alt="Image" />
                   </div>
                 {% endfor %}
               {% endif %}
             </div>
+            {% if images %}
             <a
               class="carousel-control-prev"
               href="#product-carousel"
@@ -55,12 +58,17 @@
             >
               <i class="fa fa-2x fa-angle-right text-dark"></i>
             </a>
+            {% endif %}
           </div>
         </div>
 
         <div class="col-lg-7 pb-5">
           <h3 class="font-weight-semi-bold">{{details.name}}</h3>
-          <h3 class="font-weight-semi-bold mb-4">$ {{details.discount_price}}</h3>
+          {% if discount_price is not none %}
+          <h3 class="font-weight-semi-bold mb-4">{{details.discount_price}} $</h3>
+          {% else %}
+          <h3 class="font-weight-semi-bold mb-4">{{details.price}} $</h3>
+          {% endif %}
           <p class="mb-4">
             {{details.description}}
           </p>
@@ -101,7 +109,7 @@
               >Description</a
             >
             <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3"
-              >Reviews (2)</a
+              >Reviews {{reviews|length}}  </a
             >
           </div>
           <div class="tab-content">
@@ -114,43 +122,27 @@
             <div class="tab-pane fade" id="tab-pane-3">
               <div class="row">
                 <div class="col-md-6">
-                  <h4 class="mb-4">2 review for "Colorful Stylish Shirt"</h4>
+                  <h4 class="mb-4">{{reviews|length}} review(s) for {{details.name}} </h4>
+                  {% for j in reviews %}
+                  {% if j is not none %}
                   <div class="media mb-4">
                     <img
-                      src="{{url_for('static', filename='img/default-user.webp')}}"
+                      src="{{url_for('static', filename='img/user.jpg')}}"
                       alt="Image"
                       class="img-fluid mr-3 mt-1"
                       style="width: 45px"
                     />
                     <div class="media-body">
                       <h6>
-                        John Doe<small> - <i>01 Jan 2045</i></small>
+                        {{j.users.name}}<small> - <i>{{j.created_at.strftime('%d %b %Y')}}</i></small>
                       </h6>
                       <p>
-                        Diam amet duo labore stet elitr ea clita ipsum, tempor
-                        labore accusam ipsum et no at. Kasd diam tempor rebum
-                        magna dolores sed sed eirmod ipsum.
+                        {{j.text}}
                       </p>
                     </div>
                   </div>
-                  <div class="media mb-4">
-                    <img
-                      src="img/default-user.webp"
-                      alt="Image"
-                      class="img-fluid mr-3 mt-1"
-                      style="width: 45px"
-                    />
-                    <div class="media-body">
-                      <h6>
-                        Adam Dali<small> - <i>12 Jan 2011</i></small>
-                      </h6>
-                      <p>
-                        Diam amet duo labore stet elitr ea clita ipsum, tempor
-                        labore accusam ipsum et no at. Kasd diam tempor rebum
-                        magna dolores sed sed eirmod ipsum.
-                      </p>
-                    </div>
-                  </div>
+                  {% endif %}
+                  {% endfor %}
                 </div>
                 <div class="col-md-6">
                   <h4 class="mb-4">Leave a review</h4>
@@ -158,15 +150,16 @@
                     >Your email address will not be published. Required fields
                     are marked *</small
                   >
-                  <form>
+                  <form method="post">
+                    {{form.csrf_token}}
                     <div class="form-group">
-                      <label for="message">Your Review *</label>
-                      <textarea
+                      {{render_field(form.text, id="message", class="form-control", cols="30", rows="5")}}
+                      <!-- <textarea
                         id="message"
                         cols="30"
                         rows="5"
                         class="form-control"
-                      ></textarea>
+                      ></textarea> -->
                     </div>
                     <div class="form-group mb-0">
                       <input
@@ -193,121 +186,37 @@
         </h2>
       </div>
       <div class="row px-xl-5 justify-content-center" style="gap: 30px">
-        <div class="card product-item border-0">
-          <div
-            class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-          >
-            <img class="img-fluid w-100" src="img/pr-2.webp" alt="" />
-          </div>
-          <div
-            class="card-body border-left border-right text-center p-0 pt-4 pb-3"
-          >
-            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-            <div class="d-flex justify-content-center">
-              <h6>$123.00</h6>
-              <h6 class="text-muted ml-2"><del>$123.00</del></h6>
+        {% for i in same_cat %}
+        {% if i.id != details.id %}
+          <div class="card product-item border-0">
+            <div
+              class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
+            >
+              <img class="img-fluid w-100" src="{{url_for('static', filename = i.photo)}}" alt="" />
+            </div>
+            <div
+              class="card-body border-left border-right text-center p-0 pt-4 pb-3"
+            >
+              <h6 class="text-truncate mb-3">{{i.name}}</h6>
+              <div class="d-flex justify-content-center">
+                {% if i.discount_price %}
+                <h6>{{i.discount_price}} $</h6>
+                <h6 class="text-muted ml-2"><del>{{i.price}} $</del></h6>
+                {% else %}
+                {{i.price}} $
+                {% endif %}
+              </div>
+            </div>
+            <div
+              class="card-footer d-flex justify-content-between bg-light border"
+            >
+              <a href="{{url_for('detail', id=i.id)}}" class="btn btn-sm text-dark p-0"
+                ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
+              >
             </div>
           </div>
-          <div
-            class="card-footer d-flex justify-content-between bg-light border"
-          >
-            <a href="" class="btn btn-sm text-dark p-0"
-              ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
-            >
-          </div>
-        </div>
-        <div class="card product-item border-0">
-          <div
-            class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-          >
-            <img class="img-fluid w-100" src="img/pr-3.webp" alt="" />
-          </div>
-          <div
-            class="card-body border-left border-right text-center p-0 pt-4 pb-3"
-          >
-            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-            <div class="d-flex justify-content-center">
-              <h6>$123.00</h6>
-              <h6 class="text-muted ml-2"><del>$123.00</del></h6>
-            </div>
-          </div>
-          <div
-            class="card-footer d-flex justify-content-between bg-light border"
-          >
-            <a href="" class="btn btn-sm text-dark p-0"
-              ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
-            >
-          </div>
-        </div>
-        <div class="card product-item border-0">
-          <div
-            class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-          >
-            <img class="img-fluid w-100" src="img/pr-4.webp" alt="" />
-          </div>
-          <div
-            class="card-body border-left border-right text-center p-0 pt-4 pb-3"
-          >
-            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-            <div class="d-flex justify-content-center">
-              <h6>$123.00</h6>
-              <h6 class="text-muted ml-2"><del>$123.00</del></h6>
-            </div>
-          </div>
-          <div
-            class="card-footer d-flex justify-content-between bg-light border"
-          >
-            <a href="" class="btn btn-sm text-dark p-0"
-              ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
-            >
-          </div>
-        </div>
-        <div class="card product-item border-0">
-          <div
-            class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-          >
-            <img class="img-fluid w-100" src="img/pr-5.webp" alt="" />
-          </div>
-          <div
-            class="card-body border-left border-right text-center p-0 pt-4 pb-3"
-          >
-            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-            <div class="d-flex justify-content-center">
-              <h6>$123.00</h6>
-              <h6 class="text-muted ml-2"><del>$123.00</del></h6>
-            </div>
-          </div>
-          <div
-            class="card-footer d-flex justify-content-between bg-light border"
-          >
-            <a href="" class="btn btn-sm text-dark p-0"
-              ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
-            >
-          </div>
-        </div>
-        <div class="card product-item border-0">
-          <div
-            class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-          >
-            <img class="img-fluid w-100" src="img/pr-6.webp" alt="" />
-          </div>
-          <div
-            class="card-body border-left border-right text-center p-0 pt-4 pb-3"
-          >
-            <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
-            <div class="d-flex justify-content-center">
-              <h6>$123.00</h6>
-              <h6 class="text-muted ml-2"><del>$123.00</del></h6>
-            </div>
-          </div>
-          <div
-            class="card-footer d-flex justify-content-between bg-light border"
-          >
-            <a href="" class="btn btn-sm text-dark p-0"
-              ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
-            >
-          </div>
-        </div>
+        {% endif %}
+        {% endfor %}
       </div>
     </div>
     <!-- Products End -->
