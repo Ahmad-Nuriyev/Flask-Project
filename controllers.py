@@ -1,6 +1,6 @@
 from flask import url_for, redirect, render_template, request, flash
 from werkzeug.security import check_password_hash
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 from app import app
 from models import User, Product, Contact, Category, Images, Reviews
@@ -67,10 +67,25 @@ def discount():
     products = Product.query.filter(Product.discount_price != None).all()    
     return render_template ('discount.html', products=products)
 
-
+# Bəyənilmiş məhsullar səhifəsi üçün kod
 @app.route ('/favourites/', methods = ['GET', 'POST'])
+@login_required
 def favourite():
     return render_template ('favorites.html')
+
+# Bəyənilmiş məhsullar səhifəsinə məhsulların əlavə olunması
+@app.route('/add_to_favorites/<int:id>/', methods = ['GET', 'POST'])
+def add_to_fav(id):
+    fav_product = Product.query.get(id)
+    if fav_product in current_user.product_id:
+        flash ("This product is already in your favorites list", 'info')
+    else:
+        current_user.product_id.append(fav_product)
+        db.session.commit()
+        flash ('Product added to your favorites list', 'success')
+    return render_template(url_for('detail', id=id))
+
+# Bəyənilmiş məhsullar səhifəsində mövcud olan məhsulların ordan silinməsi üçün kod
 
 # Registrasiya səhifəsi üçün kod
 @app.route ('/register/', methods = ['GET', 'POST'])

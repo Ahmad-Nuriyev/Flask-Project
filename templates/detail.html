@@ -64,10 +64,10 @@
 
         <div class="col-lg-7 pb-5">
           <h3 class="font-weight-semi-bold">{{details.name}}</h3>
-          {% if discount_price is not none %}
-          <h3 class="font-weight-semi-bold mb-4">{{details.discount_price}} $</h3>
+          {% if details.discount_price %}
+            <h3 class="font-weight-semi-bold mb-4">{{details.discount_price}} $</h3>
           {% else %}
-          <h3 class="font-weight-semi-bold mb-4">{{details.price}} $</h3>
+            <h3 class="font-weight-semi-bold mb-4">{{details.price}} $</h3>
           {% endif %}
           <p class="mb-4">
             {{details.description}}
