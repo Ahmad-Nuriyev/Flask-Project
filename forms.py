@@ -49,7 +49,7 @@ class ContactForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     email = EmailField('Email', validators=[DataRequired()])
     subject = StringField('Subject', validators=[DataRequired()])
-    message = StringField('Message', validators=[DataRequired()])
+    message = TextAreaField('Message', validators=[DataRequired()])
 
     submit = SubmitField('Send Message')
 
