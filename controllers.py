@@ -15,6 +15,18 @@ def shop():
     category = Category.query.all()
     products = Product.query.all()
 
+    n = request.args.get('n')
+    if n:
+        products = Product.query.filter(Product.name.like(f"%{n}%")).order_by(Product.name.asc()).all()
+
+    cat = request.args.get('category')
+    if cat:
+        category_list = cat.split(',')
+        category_list = [int(i) for i in category_list]
+        products = []
+        for i in category_list:
+            products += Product.query.filter_by(category_id=i).all()
+
     context = {
         'category' : category,
         'products' : products

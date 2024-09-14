@@ -28,7 +28,7 @@
           <h5 class="font-weight-semi-bold mb-4">Filter by Category</h5>
           {% for i in category %}
             {% if i.name != "Seperate" %}
-            <a href="" class="nav-item nav-link">{{i.name}} <span> ({{i.products|length}}) </span> </a>
+            <a href="{{url_for('shop')}}?category={{i.id}}" class="nav-item nav-link">{{i.name}} <span> ({{i.products|length}}) </span> </a>
             {% endif %}
           {% endfor %}
         </div>
@@ -48,7 +48,7 @@
                 >
                   <h6 class="text-truncate mb-3">{{i.name}}</h6>
                   <div class="d-flex justify-content-center">
-                    {% if i.discount_price %}
+                    {% if i.discount_price and i.discount_price < i.price %}
                     <h6>{{i.discount_price}} $</h6>
                     <h6 class="text-muted ml-2"><del>{{i.price}} $</del></h6>
                     {% else %}

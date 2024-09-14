@@ -32,7 +32,7 @@
                                 <img src="{{url_for('static', filename=i.photo)}}" alt="" style="width: 50px;">
                                 <a href="{{url_for('detail', id=i.id)}}">{{i.name}}</a>
                             </td>
-                            {% if i.discount_price %}
+                            {% if i.discount_price and i.discount_price < i.price %}
                             <td class="align-middle">{{i.discount_price}} $</td>
                             {% else %}
                             <td class="align-middle">{{i.price}} $</td>

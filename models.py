@@ -86,7 +86,6 @@ class Contact(db.Model):
     message = db.Column (db.Text, nullable=False) 
 
     created_at = db.Column (db.DateTime, server_default = db.func.now())
-    updated_at = db.Column (db.DateTime, server_default = db.func.now(), server_onupdate = db.func.now())
 
     def __repr__(self):
         return f"<{self.title}>"
@@ -106,7 +105,6 @@ class Reviews (db.Model):
     products = db.relationship ('Product', backref = db.backref('prodreview', uselist=True))
     
     created_at = db.Column (db.DateTime, server_default = db.func.now())
-    updated_at = db.Column (db.DateTime, server_default = db.func.now(), server_onupdate = db.func.now())
 
     def __repr__(self):
         return f"<{self.title}>"

@@ -64,7 +64,7 @@
 
         <div class="col-lg-7 pb-5">
           <h3 class="font-weight-semi-bold">{{details.name}}</h3>
-          {% if details.discount_price %}
+          {% if details.discount_price and details.discount_price < details.price %}
             <h3 class="font-weight-semi-bold mb-4">{{details.discount_price}} $</h3>
           {% else %}
             <h3 class="font-weight-semi-bold mb-4">{{details.price}} $</h3>
@@ -201,7 +201,7 @@
             >
               <h6 class="text-truncate mb-3">{{i.name}}</h6>
               <div class="d-flex justify-content-center">
-                {% if i.discount_price %}
+                {% if i.discount_price and i.discount_price < i.price %}
                 <h6>{{i.discount_price}} $</h6>
                 <h6 class="text-muted ml-2"><del>{{i.price}} $</del></h6>
                 {% else %}

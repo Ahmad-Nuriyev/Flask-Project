@@ -41,16 +41,18 @@
         </a>
       </div>
       <div class="col-lg-6 col-6 text-left">
-        <form action="">
+        <form action="{{url_for('shop')}}">
           <div class="input-group">
             <input
-              type="text"
+              type="search"
+              name = "n"
               class="form-control"
               placeholder="Search for products"
+              aria-label="Search" {% if n %}value="{{n}}"{% endif %}
             />
             <div class="input-group-append">
               <span class="input-group-text bg-transparent text-primary">
-                <i class="fa fa-search"></i>
+                <i type="submit" class="fa fa-search"></i>
               </span>
             </div>
           </div>
