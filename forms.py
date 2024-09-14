@@ -58,3 +58,6 @@ class ReviewForm(FlaskForm):
     text = TextAreaField('Your Review', validators=[DataRequired()])
 
     submit = SubmitField()
+
+class RemovefromFav(FlaskForm):
+    submit = SubmitField()

@@ -62,10 +62,27 @@
     ></a>
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+      function updateFavoritesCount() {
+        $.getJSON('{{ url_for("get_favorites_count") }}', function(data) {
+          $('#favorites-count').text(data.count);
+        });
+      }
+
+      $(document).ready(function() {
+        updateFavoritesCount(); // Update on page load
+
+        // Optionally, you can update the count after adding/removing favorites
+        $('form').on('submit', function() {
+          updateFavoritesCount();
+        });
+      });
+    </script>
 
     <!-- Contact Javascript File -->
     <script src="{{url_for('static', filename='mail/jqBootstrapValidation.min.js')}}"></script>

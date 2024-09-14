@@ -1,10 +1,11 @@
-from flask import url_for, redirect, render_template, request, flash
+from flask import url_for, redirect, render_template, request, flash, jsonify
 from werkzeug.security import check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 
 from app import app
+from extensions import db
 from models import User, Product, Contact, Category, Images, Reviews
-from forms import RegisterForm, LoginForm, ContactForm, ReviewForm
+from forms import RegisterForm, LoginForm, ContactForm, ReviewForm, RemovefromFav
 
 
 # Əsas/məhsul səhifənin kodu
@@ -59,6 +60,7 @@ def detail(id):
 
     else:
         return ("Product not found")
+    
 
 
 # Endirim qiymətləri mövcud olan məhsullar üçün ayrı səhifə
@@ -67,25 +69,54 @@ def discount():
     products = Product.query.filter(Product.discount_price != None).all()    
     return render_template ('discount.html', products=products)
 
+
+
 # Bəyənilmiş məhsullar səhifəsi üçün kod
 @app.route ('/favourites/', methods = ['GET', 'POST'])
 @login_required
 def favourite():
-    return render_template ('favorites.html')
+    form = RemovefromFav()
+    favorite_products = current_user.favorite_products
+
+    context ={
+        'form' : form,
+        'favorite_products' : favorite_products
+    }
+
+    return render_template ('favorites.html', **context)
 
 # Bəyənilmiş məhsullar səhifəsinə məhsulların əlavə olunması
 @app.route('/add_to_favorites/<int:id>/', methods = ['GET', 'POST'])
+@login_required
 def add_to_fav(id):
-    fav_product = Product.query.get(id)
-    if fav_product in current_user.product_id:
+    product = Product.query.get(id)
+    if product in current_user.favorite_products:
         flash ("This product is already in your favorites list", 'info')
     else:
-        current_user.product_id.append(fav_product)
+        current_user.favorite_products.append(product)
         db.session.commit()
         flash ('Product added to your favorites list', 'success')
-    return render_template(url_for('detail', id=id))
+    return redirect(url_for('detail', id=id))
 
 # Bəyənilmiş məhsullar səhifəsində mövcud olan məhsulların ordan silinməsi üçün kod
+@app.route ('/remove_from_favorites/<int:id>/', methods = ['GET', 'POST'])
+def remove_from_fav(id):
+    product = Product.query.get(id)
+    if product in current_user.favorite_products:
+        current_user.favorite_products.remove(product)
+        db.session.commit()
+        flash ('Product removed from favorites', 'success')
+        return redirect (url_for('favourite'))    
+    
+# Bəyənilmiş məhsullar səhifəsindəki olan məhsulların sayını dinamik olaraq göstərmək üçün AJAX ilə bağlı kod
+@app.route('/get_favorites_count')
+@login_required
+def get_favorites_count():
+    count = len(current_user.favorite_products)
+    return jsonify({'count': count})
+    
+
+
 
 # Registrasiya səhifəsi üçün kod
 @app.route ('/register/', methods = ['GET', 'POST'])

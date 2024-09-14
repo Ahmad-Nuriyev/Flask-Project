@@ -26,11 +26,25 @@
                         </tr>
                     </thead>
                     <tbody class="align-middle">
+                        {% for i in favorite_products %}
                         <tr>
-                            <td class="align-middle"><img src="img/pr-1.webp" alt="" style="width: 50px;"> Colorful Stylish Shirt 1</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
+                            <td class="align-middle">
+                                <img src="{{url_for('static', filename=i.photo)}}" alt="" style="width: 50px;">
+                                <a href="{{url_for('detail', id=i.id)}}">{{i.name}}</a>
+                            </td>
+                            {% if i.discount_price %}
+                            <td class="align-middle">{{i.discount_price}} $</td>
+                            {% else %}
+                            <td class="align-middle">{{i.price}} $</td>
+                            {% endif %}
+                            <td class="align-middle">
+                                <form method="post" action="{{url_for('remove_from_fav', id=i.id)}}">
+                                    {{form.csrf_token}}
+                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
+                                </form>
+                            </td>
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

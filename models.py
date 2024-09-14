@@ -10,7 +10,7 @@ class User (db.Model, UserMixin):
     email = db.Column (db.Text, nullable = False)
     password = db.Column (db.Text, nullable = False)
 
-    product_id = db.relationship('Product', secondary = 'user_products')
+    favorite_products = db.relationship('Product', secondary = 'user_products')
  
     created_at = db.Column (db.DateTime, server_default = db.func.now())
     updated_at = db.Column (db.DateTime, server_default = db.func.now(), server_onupdate = db.func.now())
