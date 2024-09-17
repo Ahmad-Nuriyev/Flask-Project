@@ -75,9 +75,8 @@
       }
 
       $(document).ready(function() {
-        updateFavoritesCount(); // Update on page load
+        updateFavoritesCount(); // Səhifə yüklənəndə update elə
 
-        // Optionally, you can update the count after adding/removing favorites
         $('form').on('submit', function() {
           updateFavoritesCount();
         });
