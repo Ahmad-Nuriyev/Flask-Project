@@ -28,7 +28,7 @@
           <h5 class="font-weight-semi-bold mb-4">Filter by Category</h5>
           {% for i in category %}
             {% if i.name != "Seperate" %}
-            <a href="{{url_for('shop')}}?category={{i.id}}" class="nav-item nav-link">{{i.name}} <span> ({{i.products|length}}) </span> </a>
+            <a href="{{url_for('shop')}}?category={{i.id}}" class="nav-item nav-link">{{i.name}} <span> ({{i.products|length}}) <!-- i.products backref-dən gəlir --> </span> </a>
             {% endif %}
           {% endfor %}
         </div>
