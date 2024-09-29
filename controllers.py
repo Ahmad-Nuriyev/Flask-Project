@@ -15,10 +15,12 @@ def shop():
     category = Category.query.all()
     products = Product.query.all()
 
+    # Search-də məhsulun adı ilə axtarış vermək imkanı üçün 3 sətrlik kod
     n = request.args.get('n')
     if n:
         products = Product.query.filter(Product.name.like(f"%{n}%")).order_by(Product.name.asc()).all()
 
+    # Əsas səhifədə məhsulları kateqoriya üzrə filtrasiya etmək üçün kod
     cat = request.args.get('category')
     if cat:
         category_list = cat.split(',')
@@ -44,6 +46,11 @@ def detail(id):
         same_cat = Product.query.filter_by(category_id=details.category_id).all()
         reviews = Reviews.query.filter_by(product_id=details.id).all()
 
+        # Məhsulun "favorites" listində olub olmamasını yoxlanışı üçün 3 sətrlik kod
+        is_favorited = False
+        if current_user.is_authenticated:
+            is_favorited = details in current_user.favorite_products
+
         form = ReviewForm()
         if request.method == "POST":
             if form.validate_on_submit():
@@ -66,7 +73,8 @@ def detail(id):
             'images' : images,
             'same_cat' : same_cat,
             'reviews' : reviews,
-            'form' : form
+            'form' : form,
+            'is_favorited' : is_favorited
         }
         return render_template ('detail.html', **context)
 
@@ -118,7 +126,14 @@ def remove_from_fav(id):
         current_user.favorite_products.remove(product)
         db.session.commit()
         flash ('Product removed from favorites', 'success')
-        return redirect (url_for('favourite'))    
+
+    #Məhsul səhifəsində "Remove from Favorites" düyməsinə basanda həmin məhsul səhifəsinin yenidən açılması üçün 3 sətrlik kod
+    next_page = request.args.get('next')
+    if next_page:
+        return redirect (next_page)
+    
+    return redirect (url_for('favourite'))    
+
     
 # Bəyənilmiş məhsullar səhifəsindəki olan məhsulların sayını dinamik olaraq göstərmək üçün AJAX ilə bağlı kod
 @app.route('/get_favorites_count')
