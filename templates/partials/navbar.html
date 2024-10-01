@@ -47,13 +47,19 @@
                         <a href= "{{url_for ('shop')}}" class="nav-item nav-link {% if request.path == url_for ('shop') %} active {% endif %}">Shop</a>
                         <a href="{{url_for ('discount')}}" class="nav-item nav-link {% if request.path == url_for ('discount') %} active {% endif %}">Dicsounts</a>
                         <!-- <a href="" class="nav-item nav-link">Shop Detail</a> -->
-                        <a href="{{url_for ('contacts')}}" class="nav-item nav-link">Contact</a>
+                        <a href="{{url_for ('contacts')}}" class="nav-item nav-link {% if request.path == url_for ('contacts') %} active {% endif %}">Contact</a>
                         
                     </div>
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="{{url_for ('login')}}" class="nav-item nav-link">Login</a>
-                        <a href="{{url_for ('register')}}" class="nav-item nav-link">Register</a>
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{url_for ('login')}}" class="nav-item nav-link {% if request.path == url_for ('login') %} active {% endif %}">Login</a>
+                        {% else %}
+                        <a href="" class="nav-item nav-link"> {{ current_user.name }} </a>
+                        {% endif %}
+                        <a href="{{url_for ('register')}}" class="nav-item nav-link {% if request.path == url_for ('register') %} active {% endif %}">Register</a>
+                        {% if current_user.is_authenticated %}
                         <a href="{{url_for ('logout')}}" class="nav-item nav-link">Logout</a>
+                        {% endif %}
                     </div>
                 </div>
             </nav>
