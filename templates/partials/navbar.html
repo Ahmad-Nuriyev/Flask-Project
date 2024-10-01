@@ -44,10 +44,10 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href= "{{url_for ('shop')}}" class="nav-item nav-link">Shop</a>
-                        <a href="{{url_for ('discount')}}" class="nav-item nav-link">Dicsounts</a>
+                        <a href= "{{url_for ('shop')}}" class="nav-item nav-link {% if request.path == url_for ('shop') %} active {% endif %}">Shop</a>
+                        <a href="{{url_for ('discount')}}" class="nav-item nav-link {% if request.path == url_for ('discount') %} active {% endif %}">Dicsounts</a>
                         <!-- <a href="" class="nav-item nav-link">Shop Detail</a> -->
-                        <a href="{{url_for ('contacts')}}" class="nav-item nav-link active">Contact</a>
+                        <a href="{{url_for ('contacts')}}" class="nav-item nav-link">Contact</a>
                         
                     </div>
                     <div class="navbar-nav ml-auto py-0">

@@ -65,7 +65,7 @@ def detail(id):
                     return redirect (url_for('detail', id=id))
                 else:
                     flash ('You must be logged in to leave a review', 'danger')
-                    return redirect (url_for('detail', id=id))
+                    return redirect (url_for('login'))
             
 
         context = {
